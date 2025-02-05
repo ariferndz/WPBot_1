@@ -9,3 +9,23 @@ router.get('/', showDashboard);
 router.post('/surveys', createSurvey);
 
 module.exports = router;
+
+// En admin.route.js
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
+passport.use(new LocalStrategy(
+  (username, password, done) => {
+    if (username === process.env.ADMIN_USER && password === process.env.ADMIN_PASS) {
+      return done(null, { user: 'admin' });
+    }
+    return done(null, false);
+  }
+));
+
+
+// Protege las rutas
+router.get('/', 
+  passport.authenticate('local', { session: false }), 
+  showDashboard
+);
