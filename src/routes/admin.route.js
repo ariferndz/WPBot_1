@@ -3,6 +3,7 @@ const passport = require('passport'); // <-- Declaración única
 const LocalStrategy = require('passport-local').Strategy;
 const router = express.Router();
 const { showDashboard, createSurvey } = require('../controllers/admin.controller');
+const passport = require('../config/passport');
 
 // Configuración de Passport
 passport.use(new LocalStrategy(
