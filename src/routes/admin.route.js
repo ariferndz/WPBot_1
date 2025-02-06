@@ -1,7 +1,10 @@
 const express = require('express');
+const passport = require('passport'); // <-- Declaración única
+const LocalStrategy = require('passport-local').Strategy;
 const router = express.Router();
 const passport = require('../config/passport');
 const { showDashboard, createSurvey } = require('../controllers/admin.controller');
+const passport = require('../config/passport');
 
 // Ruta para mostrar el formulario de inicio de sesión
 router.get('/login', (req, res) => {
@@ -32,3 +35,9 @@ router.get('/', authenticate, showDashboard);
 router.post('/surveys', authenticate, createSurvey);
 
 module.exports = router;
+
+// Protege las rutas
+router.get('/', 
+  passport.authenticate('local', { session: false }), 
+  showDashboard
+);
