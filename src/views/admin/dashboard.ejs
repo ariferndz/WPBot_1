@@ -1,3 +1,4 @@
+<!--FUNCIONA PERO ES BASICO
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -19,9 +20,13 @@
             <h3><%= survey.title %></h3>
             <h4>Preguntas:</h4>
             <ul>
-                <% survey.questions.forEach(question => { %>
-                    <li><%= question.text %></li>
-                <% }); %>
+                <% if (survey.questions) { %>
+                    <% survey.questions.forEach(question => { %>
+                        <li><%= question.text %></li>
+                    <% }); %>
+                <% } else { %>
+                    <li>No hay preguntas para esta encuesta.</li>
+                <% } %>
             </ul>
         </div>
     <% }); %>
@@ -34,5 +39,74 @@
         <br>
         <button type="submit">Crear Encuesta</button>
     </form>
+</body>
+</html>
+
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .survey { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; }
+        form { margin-top: 30px; }
+        .question-group { margin-bottom: 15px; }
+        .question-group input { width: 100%; padding: 8px; margin-bottom: 10px; }
+        .add-question { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Encuestas Activas</h1>
+    
+    <% surveys.forEach(survey => { %>
+        <div class="survey">
+            <h3><%= survey.title %></h3>
+            <h4>Preguntas:</h4>
+            <ul>
+                <% if (survey.questions) { %>
+                    <% survey.questions.forEach(question => { %>
+                        <li><%= question.text %></li>
+                    <% }); %>
+                <% } else { %>
+                    <li>No hay preguntas para esta encuesta.</li>
+                <% } %>
+            </ul>
+        </div>
+    <% }); %>
+
+    <h2>Crear Nueva Encuesta</h2>
+    <form id="surveyForm" action="/admin/surveys" method="POST">
+        <input type="text" name="title" placeholder="Título de la encuesta" required>
+        <br><br>
+
+        <!-- Contenedor para las preguntas -->
+        <div id="questionsContainer">
+            <div class="question-group">
+                <input type="text" name="questions[]" placeholder="Escribe una pregunta" required>
+            </div>
+        </div>
+
+        <!-- Botón para agregar más preguntas -->
+        <button type="button" class="add-question" onclick="addQuestion()">Agregar otra pregunta</button>
+        <br><br>
+
+        <button type="submit">Crear Encuesta</button>
+    </form>
+
+    <!-- Script para agregar preguntas dinámicamente -->
+    <script>
+        function addQuestion() {
+            const container = document.getElementById('questionsContainer');
+            const newQuestion = document.createElement('div');
+            newQuestion.classList.add('question-group');
+            newQuestion.innerHTML = `
+                <input type="text" name="questions[]" placeholder="Escribe una pregunta" required>
+            `;
+            container.appendChild(newQuestion);
+        }
+    </script>
 </body>
 </html>

@@ -1,32 +1,34 @@
 const express = require('express');
-//const passport = require('passport'); // <-- Declaración única
-const LocalStrategy = require('passport-local').Strategy;
 const router = express.Router();
-const { showDashboard, createSurvey } = require('../controllers/admin.controller');
 const passport = require('../config/passport');
+const { showDashboard, createSurvey } = require('../controllers/admin.controller');
 
-// Configuración de Passport
-passport.use(new LocalStrategy(
-  (username, password, done) => {
-    if (username === process.env.ADMIN_USER && password === process.env.ADMIN_PASS) {
-      return done(null, { user: 'admin' });
-    }
-    return done(null, false);
-  }
-));
+// Ruta para mostrar el formulario de inicio de sesión
+router.get('/login', (req, res) => {
+  res.render('admin/login');
+});
+
+// Ruta para procesar el inicio de sesión
+router.post('/login', 
+  passport.authenticate('local', { 
+    successRedirect: '/admin',
+    failureRedirect: '/admin/login',
+    failureFlash: false // Puedes habilitar mensajes flash si lo necesitas
+  })
+);
 
 // Middleware de autenticación
-const authenticate = passport.authenticate('local', { session: false });
+const authenticate = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/admin/login');
+};
 
 // Ruta para mostrar el panel de administración (protegida)
 router.get('/', authenticate, showDashboard);
 
 // Ruta para crear una nueva encuesta (protegida)
 router.post('/surveys', authenticate, createSurvey);
-module.exports = router;
 
-// Protege las rutas
-router.get('/', 
-  passport.authenticate('local', { session: false }), 
-  showDashboard
-);
+module.exports = router;
