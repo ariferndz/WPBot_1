@@ -53,7 +53,7 @@ const { Survey, Question } = require('../models/user.model');
 exports.showDashboard = async (req, res) => {
   try {
     const surveys = await Survey.findAll({
-      include: [{ model: Question, as: 'questions' }],
+      include: [{ model: Question, as: 'Questions' }],
     });
     res.render('admin/dashboard', { surveys });
   } catch (error) {
@@ -69,26 +69,28 @@ exports.showDashboard = async (req, res) => {
  */
 exports.createSurvey = async (req, res) => {
   try {
-    const { title, questions } = req.body;
+      const { title, questions } = req.body;
 
-    const survey = await Survey.create({
-      title,
-      status: 'active',
-    });
+      // Crear la encuesta
+      const survey = await Survey.create({
+          title,
+          status: 'active',
+      });
 
-    await Promise.all(
-      questions.split('\n').map((text, index) =>
-        Question.create({
-          text: text.trim(),
-          order: index + 1,
-          surveyId: survey.id,
-        })
-      )
-    );
+      // Crear las preguntas (questions es un array)
+      await Promise.all(
+          questions.map((text, index) =>
+              Question.create({
+                  text: text.trim(),
+                  order: index + 1,
+                  surveyId: survey.id,
+              })
+          )
+      );
 
-    res.redirect('/admin');
+      res.redirect('/admin');
   } catch (error) {
-    console.error('Error creando encuesta:', error);
-    res.status(500).redirect('/admin');
+      console.error('Error creando encuesta:', error);
+      res.status(500).redirect('/admin');
   }
 };

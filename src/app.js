@@ -1,7 +1,8 @@
-//agregada la ruta admin
-require('dotenv').config();
+require('dotenv').config(); // <-- Agrega esta línea al inicio del archivo
 const express = require('express');
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const passport = require('passport');
 const { connectDB } = require('./config/database');
 const webhookRoutes = require('./routes/webhook.route');
 const adminRoutes = require('./routes/admin.route');
@@ -13,6 +14,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.set('views', './src/views');
+
+// Configuración de sesión
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'secret_key',
+  resave: false,
+  saveUninitialized: false,
+}));
+
+// Inicialización de Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Conectar a la base de datos
 connectDB();
